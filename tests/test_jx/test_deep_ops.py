@@ -225,28 +225,21 @@ class TestDeepOps(BaseTestCase):
             "expecting_list": {
                 "meta": {"format": "list"},
                 "data": [
-                    {"o": 1, "_a": {"b": "x", "v": 5}},
-                    {"o": 2, "_a": {"b": "x", "v": 7}},
-                    {"o": 3, "_a": [
-                        {"b": "x", "v": 2},
-                        {"b": "y", "v": 3}
-                    ]},
+                    {"o": 1, "_a.b": "x", "_a.v": 5},
+                    {"o": 2, "_a.b": "x", "_a.v": 7},
+                    {"o": 3, "_a.b": "x", "_a.v": 2},
+                    {"o": 3, "_a.b": "y", "_a.v": 3},
                     {"o": 4, "c": "x"}
                 ]},
             "expecting_table": {
                 "meta": {"format": "table"},
-                "header": ["o", "_a", "c"],
+                "header": ["o", "_a.b", "_a.v" "c"],
                 "data": [
-                    [1, {"b": "x", "v": 5}, NULL],
-                    [2, {"b": "x", "v": 7}, NULL],
-                    [3,
-                     [
-                         {"b": "x", "v": 2},
-                         {"b": "y", "v": 3}
-                     ],
-                     NULL
-                    ],
-                    [4, NULL, "x"]
+                    [1, "x", 5, NULL],
+                    [2, "x", 7, NULL],
+                    [3, "x", 2, NULL],
+                    [3, "y", 3, NULL],
+                    [4, NULL, NULL, "x"]
                 ]
             },
             "expecting_cube": {
@@ -258,17 +251,10 @@ class TestDeepOps(BaseTestCase):
                     }
                 ],
                 "data": {
-                    "_a": [
-                        {"b": "x", "v": 5},
-                        {"b": "x", "v": 7},
-                        [
-                            {"b": "x", "v": 2},
-                            {"b": "y", "v": 3}
-                        ],
-                        NULL
-                    ],
+                    "_a.b":["x", "x", "x", "y", NULL],
+                    "_a.v":[5, 7, 2, 3, NULL],
                     "c": [NULL, NULL, NULL, "x"],
-                    "o": [1, 2, 3, 4]
+                    "o": [1, 2, 3, 3, 4]
                 }
             }
         }
