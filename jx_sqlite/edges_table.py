@@ -66,6 +66,7 @@ class EdgesTable(SetOpTable):
             "1 __exists__"  # USED TO DISTINGUISH BETWEEN NULL-BECAUSE-LEFT-JOIN OR NULL-BECAUSE-NULL-VALUE
         ]
 
+        domain_alias = []
         for edge_index, query_edge in enumerate(query.edges):
             edge_alias = "e" + text_type(edge_index)
 
@@ -230,6 +231,7 @@ class EdgesTable(SetOpTable):
                 not_on_clause = None
             elif isinstance(query_edge.domain, DefaultDomain):
                 domain_names = ["d" + text_type(edge_index) + "c" + text_type(i) for i, _ in enumerate(edge_names)]
+                domain_alias.append(domain_names[0])
                 domain_columns = [c for c in self.sf.columns if quote_table(c.es_column) in vals]
                 if not domain_columns:
                     domain_nested_path = "."
@@ -472,7 +474,8 @@ class EdgesTable(SetOpTable):
         for edge_index, query_edge in enumerate(query.edges):
             edge_alias = "e" + text_type(edge_index)
             domain = domains[edge_index]
-            sources.append("(" + domain + ") " + edge_alias)
+            domain_name = domain_alias[edge_index]
+            sources.append("(" + domain + "UNION ALL SELECT NULL AS " + domain_name + ") " + edge_alias)
 
         # COORDINATES OF ALL primary DATA
         part = "SELECT " + (",\n".join(outer_selects)) + "\nFROM\n" + primary
